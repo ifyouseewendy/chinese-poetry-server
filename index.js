@@ -1,16 +1,35 @@
 var express = require('express');
-var app = express();
+const { ApolloServer, gql } = require('apollo-server-express');
 
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('./db/ci.db');
+// Database
+const db = require('better-sqlite3')('./db/ci.db');
 
-app.get('/', function (req, res) {
-  db.serialize(function() {
-    db.each("select * from ci limit 1;", function(err, row) {
-      console.log(row);
-      res.send(row);
-    });
-  });
-});
+// GraphQL
+const typeDefs = gql`
+  type Query {
+    hello: String
+    ci: [CI]
+  }
+  type CI {
+      rhythmic: String
+      author: String
+      content: String
+  }
+`;
 
-app.listen(3000);
+const resolvers = {
+    Query: {
+        hello: () => 'Hello world!',
+        ci: () => db.prepare('SELECT * FROM ci limit 1').all(),
+    },
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
+
+const app = express();
+server.applyMiddleware({ app });
+
+const port = 3000;
+app.listen({ port }, () =>
+    console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`),
+);
