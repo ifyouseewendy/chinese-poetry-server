@@ -20,7 +20,7 @@ const typeDefs = gql`
 const resolvers = {
     Query: {
         hello: () => 'Hello world!',
-        ci: () => db.prepare('SELECT * FROM ci limit 1').all(),
+        ci: () => db.prepare('SELECT * FROM ci ORDER BY random() limit 1').all(),
     },
 };
 
