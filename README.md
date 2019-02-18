@@ -1,6 +1,7 @@
-## Poem Server
+## Chinese Poetry Server
 
-A GraphQL Chinese poem server based on [chinese-poetry/chinese-poetry](https://github.com/chinese-poetry/chinese-poetry).
+A Chinese poetry GraphQL server based on [chinese-poetry/chinese-poetry](https://github.com/chinese-poetry/chinese-poetry),
+servered as API for [https://github.com/ifyouseewendy/zhifou](https://github.com/ifyouseewendy/zhifou).
 
 Endpoint: `/graphql` with schema
 
