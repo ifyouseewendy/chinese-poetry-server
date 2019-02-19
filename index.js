@@ -8,7 +8,7 @@ const db = require('better-sqlite3')('./db/ci.db');
 const typeDefs = gql`
   type Query {
     hello: String
-    ci(perPage: Int): [CI]
+    ci(perPage: Int = 10): [CI]
   }
   type CI {
       rhythmic: String!
@@ -21,8 +21,6 @@ const resolvers = {
     Query: {
         hello: () => 'Hello world!',
         ci: function(parent, args) {
-            const perPage = args.perPage || 10;
-
             if (args.perPage > 30) {
                 throw new UserInputError("Your arg 'perPage' is too big. 30 is the maximum");
             } else {
