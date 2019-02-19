@@ -1,5 +1,5 @@
 var express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
+const { ApolloServer, gql, UserInputError } = require('apollo-server-express');
 
 // Database
 const db = require('better-sqlite3')('./db/ci.db');
@@ -8,19 +8,27 @@ const db = require('better-sqlite3')('./db/ci.db');
 const typeDefs = gql`
   type Query {
     hello: String
-    ci: [CI]
+    ci(perPage: Int): [CI]
   }
   type CI {
-      rhythmic: String
-      author: String
-      content: String
+      rhythmic: String!
+      author: String!
+      content: String!
   }
 `;
 
 const resolvers = {
     Query: {
         hello: () => 'Hello world!',
-        ci: () => db.prepare('SELECT * FROM ci ORDER BY random() limit 1').all(),
+        ci: function(parent, args) {
+            const perPage = args.perPage || 10;
+
+            if (args.perPage > 30) {
+                throw new UserInputError("Your arg 'perPage' is too big. 30 is the maximum");
+            } else {
+                return db.prepare('SELECT * FROM ci ORDER BY random() limit ?').all(args.perPage);
+            }
+        }
     },
 };
 
